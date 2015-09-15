@@ -1,74 +1,89 @@
 ﻿using System;
 using System.Numerics;
 using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
 
 
 namespace Fractal
 {
+    /// <summary>
+    /// Class for Parallel processing of fractal.
+    /// </summary>
     public class FractalP : IFractal
     {
-        public int MaxConstalnt { get; set; }
-        public int MaxIteraion { get; set; }
+        int IFractal.MaxConstant { get; set; }
+        int IFractal.MaxIteration { get; set; }
 
-        public Func<Complex, Complex> F { get; set; }
-        public Func<Complex, Complex, Complex> G { get; set; }
+        Func<Complex, Complex> IFractal.F { get; set; }
+        Func<Complex, Complex, Complex> IFractal.G { get; set; }
 
-        public Complex zMin { get; set; }
-        public Complex zMax { get; set; }
+        Complex IFractal.zMin { get; set; }
+        Complex IFractal.zMax { get; set; }
 
-        public int StepsX { get; set; }
-        public int StepsY { get; set; }
+        int IFractal.StepsX { get; set; }
+        int IFractal.StepsY { get; set; }
         
-        public Color C1 { get; set; }
-        public Func<int, Color> C2 { get; set; }
+        Color IFractal.C1 { get; set; }
+        Func<int, Color> IFractal.C2 { get; set; }
 
         private double StepX
         {
-            get { return (zMax.Real - zMin.Real) / StepsX; }
+            get { return (((IFractal)this).zMax.Real - ((IFractal)this).zMin.Real) / ((IFractal)this).StepsX; }
         }
         private double StepY
         {
-            get { return (zMax.Imaginary - zMin.Imaginary) / StepsY; }
+            get { return (((IFractal)this).zMax.Imaginary - ((IFractal)this).zMin.Imaginary) / ((IFractal)this).StepsY; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FractalP"/> class.
+        /// </summary>
         public FractalP()
             : this(2, 150, z => z, (z1, z2) => z1*z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Red, k => Color.FromArgb(k))
         { }
 
-        public FractalP(int MaxConstalnt, int MaxIteraion, Func<Complex, Complex> F, Func<Complex, Complex, Complex> G,
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FractalP"/> class.
+        /// </summary>
+        /// <param name="MaxConstant">The maximum constant.</param>
+        /// <param name="MaxIteration">The maximum iteration.</param>
+        /// <param name="F">The f.</param>
+        /// <param name="G">The g.</param>
+        /// <param name="zMin">The z minimum.</param>
+        /// <param name="zMax">The z maximum.</param>
+        /// <param name="C1">The c1.</param>
+        /// <param name="C2">The c2.</param>
+        public FractalP(int MaxConstant, int MaxIteration, Func<Complex, Complex> F, Func<Complex, Complex, Complex> G,
                Complex zMin, Complex zMax, Color C1, Func<int, Color> C2)
         {
-            this.MaxConstalnt = MaxConstalnt;
-            this.MaxIteraion = MaxIteraion;
-            this.F = F;
-            this.G = G;
-            this.zMin = zMin;
-            this.zMax = zMax;
-            this.C1 = C1;
-            this.C2 = C2;
-            this.StepsX = this.StepsY = 200;
+            ((IFractal)this).MaxConstant = MaxConstant;
+            ((IFractal)this).MaxIteration = MaxIteration;
+            ((IFractal)this).F = F;
+            ((IFractal)this).G = G;
+            ((IFractal)this).zMin = zMin;
+            ((IFractal)this).zMax = zMax;
+            ((IFractal)this).C1 = C1;
+            ((IFractal)this).C2 = C2;
+            ((IFractal)this).StepsX = ((IFractal)this).StepsY = 200;
         }
-        
-        public int[,] Process(int steps = 200)
+    
+        int[,] IFractal.Process()
         {
-            this.StepsX = this.StepsY = steps;
-            int[,] result = new int[StepsX, StepsY];
+            int[,] result = new int[((IFractal)this).StepsX, ((IFractal)this).StepsY];
 
-            Parallel.For(0, StepsX, i => {
-                for (int j = 0; j < StepsY; j++)
+            Parallel.For(0, ((IFractal)this).StepsX, i => {
+                for (int j = 0; j < ((IFractal)this).StepsY; j++)
                 {
                     int Iteration = 0;
                     double Module = 0;
                     Complex zNext;
-                    Complex z = zMin + new Complex(i * StepX, j * StepY);
+                    Complex z = ((IFractal)this).zMin + new Complex(i * StepX, j * StepY);
 
-                    zNext = F(z);
+                    zNext = ((IFractal)this).F(z);
 
-                    while (Iteration < MaxIteraion && Module < MaxConstalnt)
+                    while (Iteration < ((IFractal)this).MaxIteration && Module < ((IFractal)this).MaxConstant)
                     {
-                        zNext = G(zNext, z);
+                        zNext = ((IFractal)this).G(zNext, z);
                         Module = zNext.Magnitude;
                         Iteration++;
                     }
