@@ -11,14 +11,35 @@ namespace ViewModel
     {
         private FractalP fractal;
 
+        private bool isMandelbrot, isJulia;
+
         public Nullable<bool> IsMandelbrot
         {
-            get; set;
+            get { return isMandelbrot; }
+            set {
+                if (value == true) {
+                    isMandelbrot = true;
+                    fractal.G = (z1, z2) => z1 * z1 + z2;
+                    NotifyPropertyChanged("Image");
+                }
+                else
+                    isMandelbrot = false;
+            }
         }
 
         public Nullable<bool> IsJulia
         {
-            get; set;
+            get { return isJulia; }
+            set
+            {
+                if (value == true) {
+                    isJulia = true;
+                    fractal.G = (z1, z2) => z1 * z1 + new Complex(0.3, 0.6);
+                    NotifyPropertyChanged("Image");
+                }
+                else
+                    isJulia = false;
+            }
         }
 
         public Complex zMin {
@@ -131,6 +152,8 @@ namespace ViewModel
         public FractalVM()
         {
             fractal = new FractalP();
+            isMandelbrot = true;
+            isJulia = false;
         }
     }
 }

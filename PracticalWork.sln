@@ -8,8 +8,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{F3CC9134-759E-4C99-B33F-72851A53AFA7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FractalGUI", "FractalGUI\FractalGUI.csproj", "{47E15164-6F32-4178-94A9-734B56825F06}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F70A6C23-C69D-41B7-BD71-3D32878311A7} = {F70A6C23-C69D-41B7-BD71-3D32878311A7}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewModel", "ViewModel\ViewModel.csproj", "{F70A6C23-C69D-41B7-BD71-3D32878311A7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AB2867D7-6F08-4066-8953-3CE4B55E42A0} = {AB2867D7-6F08-4066-8953-3CE4B55E42A0}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
