@@ -1,6 +1,7 @@
 ﻿using System;
 using Fractal;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -13,6 +14,10 @@ namespace ViewModel
 
         private bool isMandelbrot, isJulia;
 
+        private BitmapSource image;
+
+        private bool isRendering, waitRender;
+
         public Nullable<bool> IsMandelbrot
         {
             get { return isMandelbrot; }
@@ -20,7 +25,7 @@ namespace ViewModel
                 if (value == true) {
                     isMandelbrot = true;
                     fractal.G = (z1, z2) => z1 * z1 + z2;
-                    NotifyPropertyChanged("Image");
+                    RenderImage();
                 }
                 else
                     isMandelbrot = false;
@@ -35,7 +40,7 @@ namespace ViewModel
                 if (value == true) {
                     isJulia = true;
                     fractal.G = (z1, z2) => z1 * z1 + new Complex(0.3, 0.6);
-                    NotifyPropertyChanged("Image");
+                    RenderImage();
                 }
                 else
                     isJulia = false;
@@ -55,6 +60,17 @@ namespace ViewModel
             get { return fractal.zMax; }
             set {
                 fractal.zMax = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int Steps
+        {
+            get { return fractal.StepsX; }
+            set
+            {
+                    fractal.StepsX = fractal.StepsY = value;
+                RenderImage();
                 NotifyPropertyChanged();
             }
         }
@@ -113,7 +129,11 @@ namespace ViewModel
 
         public BitmapSource Image
         {
-            get { return RenderImage(); }
+            get { return image; }
+            set {
+                image = value;
+                NotifyPropertyChanged();
+            }
         }
 
         private byte[,] getArray()
@@ -125,35 +145,72 @@ namespace ViewModel
             }
             return source;
         }
-
-        private BitmapSource RenderImage()
+        
+        private Task<BitmapSource> Render ()
         {
-            byte[,] source = null;
-            Thread getData = new Thread(() => source = getArray());
-            getData.Start();
-            getData.Join();
-
-            var stride = StepsX * 3 + StepsX % 4;
-            byte[] pixels = new byte[StepsY * stride];
-
-            for (int i = 0; i < StepsX; i++)
+            return Task.Run<BitmapSource>(() =>
             {
-                for (int j = 0; j < StepsY; j++)
+                BitmapSource result;
+                byte[,] source = null;
+
+                int X = StepsX;
+                int Y = StepsY;
+                source = getArray();
+
+                int stride = X * 3 + X % 4;
+                byte[] pixels = new byte[Y * stride];
+
+                for (int i = 0; i < X; i++)
                 {
-                    var current = source[i, j];
-                    pixels[i * 3 + j * stride + 0] = (current == MaxIteration ? C1 : C2(current)).R;
-                    pixels[i * 3 + j * stride + 1] = (current == MaxIteration ? C1 : C2(current)).G;
-                    pixels[i * 3 + j * stride + 2] = (current == MaxIteration ? C1 : C2(current)).B;
+                    for (int j = 0; j < Y; j++)
+                    {
+                        var current = source[i, j];
+                        pixels[i * 3 + j * stride + 0] = (current == MaxIteration ? C1 : C2(current)).R;
+                        pixels[i * 3 + j * stride + 1] = (current == MaxIteration ? C1 : C2(current)).G;
+                        pixels[i * 3 + j * stride + 2] = (current == MaxIteration ? C1 : C2(current)).B;
+                    }
                 }
+                result =  BitmapSource.Create(X, Y, 96, 96, PixelFormats.Rgb24, BitmapPalettes.WebPalette, pixels, stride);
+                result.Freeze();
+                return result;
+            });
+        }
+
+        private async void RenderImageAsync()
+        {
+            isRendering = true;
+            image = await Render();
+            image.Freeze();
+            lock(this)
+            {
+                NotifyPropertyChanged("Image");
             }
-            return BitmapSource.Create(StepsX, StepsY, 96, 96, PixelFormats.Rgb24, BitmapPalettes.WebPalette, pixels, stride);
+            isRendering = false;
+            if (waitRender)
+            {
+                RenderImageAsync();
+                waitRender = false;
+            }
+        }
+
+        private void RenderImage()
+        {
+            if (isRendering)
+            {
+                waitRender = true;
+            }
+            else
+            {
+                RenderImageAsync();
+            }
         }
 
         public FractalVM()
         {
             fractal = new FractalP();
-            isMandelbrot = true;
+            IsMandelbrot = true;
             isJulia = false;
+            isRendering = waitRender = false;
         }
     }
 }
