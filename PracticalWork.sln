@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parallel", "Parallel\Parall
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{F3CC9134-759E-4C99-B33F-72851A53AFA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FractalGUI", "FractalGUI\FractalGUI.csproj", "{47E15164-6F32-4178-94A9-734B56825F06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewModel", "ViewModel\ViewModel.csproj", "{F70A6C23-C69D-41B7-BD71-3D32878311A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{F3CC9134-759E-4C99-B33F-72851A53AFA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3CC9134-759E-4C99-B33F-72851A53AFA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3CC9134-759E-4C99-B33F-72851A53AFA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47E15164-6F32-4178-94A9-734B56825F06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47E15164-6F32-4178-94A9-734B56825F06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47E15164-6F32-4178-94A9-734B56825F06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47E15164-6F32-4178-94A9-734B56825F06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F70A6C23-C69D-41B7-BD71-3D32878311A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F70A6C23-C69D-41B7-BD71-3D32878311A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F70A6C23-C69D-41B7-BD71-3D32878311A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F70A6C23-C69D-41B7-BD71-3D32878311A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

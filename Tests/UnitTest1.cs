@@ -12,7 +12,7 @@ namespace Tests
         [TestMethod]
         public void TestSerial()
         {
-            IFractal obj = new Serial();
+            Serial obj = new Serial();
             obj.StepsX = obj.StepsY = 500;
             int[,] res = obj.Process();
         }
@@ -20,7 +20,7 @@ namespace Tests
         [TestMethod]
         public void TestParallel()
         {
-            IFractal obj = new FractalP();
+            FractalP obj = new FractalP();
             obj.StepsX = obj.StepsY = 500;
             int[,] res = obj.Process();
         }
@@ -28,7 +28,7 @@ namespace Tests
         [TestMethod]
         public void TestInterfaceParallel()
         {
-            IFractal obj = new FractalP(2, 150, z => z, (z1, z2) => z1 * z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Red, k => Color.FromArgb(k));
+            FractalP obj = new FractalP(2, 150, z => z, (z1, z2) => z1 * z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Red, k => Color.FromArgb(k));
             Assert.AreEqual(obj.MaxConstant, 2);
             Assert.AreEqual(obj.MaxIteration, 150);
             Assert.AreEqual(obj.F(new Complex(1, 2)), new Complex(1, 2));
@@ -41,7 +41,7 @@ namespace Tests
         [TestMethod]
         public void TestInterfaceSerial()
         {
-            IFractal obj = new Serial(2, 150, z => z, (z1, z2) => z1 * z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Red, k => Color.FromArgb(k));
+            Serial obj = new Serial(2, 150, z => z, (z1, z2) => z1 * z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Red, k => Color.FromArgb(k));
             Assert.AreEqual(obj.MaxConstant, 2);
             Assert.AreEqual(obj.MaxIteration, 150);
             Assert.AreEqual(obj.F(new Complex(1, 2)), new Complex(1, 2));
