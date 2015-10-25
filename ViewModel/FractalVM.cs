@@ -95,14 +95,22 @@ namespace ViewModel
             get { return RenderImage(); }
         }
 
+        private byte[,] getArray()
+        {
+            byte[,] source;
+            lock (fractal)
+            {
+                source = fractal.Process();
+            }
+            return source;
+        }
+
         private BitmapSource RenderImage()
         {
-            lock(fractal)
-            {
-                Thread getData = new Thread()
-                byte[,] source = fractal.Process();
-
-            }
+            byte[,] source = null;
+            Thread getData = new Thread(() => source = getArray());
+            getData.Start();
+            getData.Join();
 
             var stride = StepsX * 3 + StepsX % 4;
             byte[] pixels = new byte[StepsY * stride];
