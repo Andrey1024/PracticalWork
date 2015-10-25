@@ -5,33 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FractalGUI"
         mc:Ignorable="d"
-        Title="Fractal" Height="350" Width="525"
+        Title="Fractal" Height="500" Width="700"
         FontSize="16">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
+    <StackPanel Orientation="Horizontal">
 
-        <StackPanel Grid.Column="0">
-            <GroupBox Header="Image">
-                <Image Source="{Binding Image}" Stretch="Fill"></Image>
-            </GroupBox>            
-        </StackPanel>
+        <GroupBox Header="Image" FontSize="20" DockPanel.Dock="Left">
+            <Image Source="{Binding Image}" Stretch="Fill" Margin="5"></Image>
+        </GroupBox>
 
-        <GroupBox MinWidth="100" Header="Options" Grid.Column="1">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-
-                <GroupBox Header="Fractal type">
+        <GroupBox MinWidth="100" Header="Options" FontSize="20" DockPanel.Dock="Right">
+            <StackPanel>
+                <GroupBox Header="Fractal type" FontSize="16">
                     <StackPanel>
                         <RadioButton Content="Mandelbrot" IsChecked="{Binding IsMandelbrot}"></RadioButton>
                         <RadioButton Content="Julia" IsChecked="{Binding IsJulia}"></RadioButton>
                     </StackPanel>
                 </GroupBox>
-            </Grid>
+
+                <GroupBox Header="Fractal resolution" FontSize="16">
+                    <Slider Minimum="100" Maximum="1000" Value="{Binding Steps}"></Slider>
+                </GroupBox>
+
+                <GroupBox Header="Colors" FontSize="16"></GroupBox>
+                    
+            </StackPanel>
         </GroupBox>
-    </Grid>
+    </StackPanel>
 </Window>

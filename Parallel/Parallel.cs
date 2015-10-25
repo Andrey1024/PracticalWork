@@ -69,15 +69,19 @@ namespace Fractal
     
         public byte[,] Process()
         {
-            byte[,] result = new byte[StepsX, StepsY];
+            int X = StepsX;
+            int Y = StepsY;
+            double dX = StepX;
+            double dY = StepY;
+            byte[,] result = new byte[X, Y];
 
-            Parallel.For(0, StepsX, i => {
-                for (int j = 0; j < StepsY; j++)
+            Parallel.For(0, X, i => {
+                for (int j = 0; j < Y; j++)
                 {
                     byte Iteration = 0;
                     double Module = 0;
                     Complex zNext;
-                    Complex z = zMin + new Complex(i * StepX, j * StepY);
+                    Complex z = zMin + new Complex(i * dX, j * dY);
 
                     zNext = F(z);
 

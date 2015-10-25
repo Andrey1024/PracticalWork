@@ -38,7 +38,7 @@ namespace Fractal
         /// Initializes a new instance of the <see cref="FractalP"/> class.
         /// </summary>
         public Serial()
-            : this(2, 150, z => z, (z1, z2) => z1 * z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Red, k => Color.FromArgb(k))
+            : this(2, 150, z => z, (z1, z2) => z1 * z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Red, k => Color.FromArgb(k, k * 2, k *3))
         { }
 
         /// <summary>
