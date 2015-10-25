@@ -4,9 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FractalGUI"
+        xmlns:vm="clr-namespace:ViewModel;assembly=ViewModel"
         mc:Ignorable="d"
         Title="Fractal" Height="500" Width="700"
         FontSize="16">
+    <Window.Resources>
+        <vm:BoolConverter x:Key="boolConverter"></vm:BoolConverter>
+        <vm:VisibilityConverter x:Key="visibilityConverter"></vm:VisibilityConverter>
+    </Window.Resources>
+
     <DockPanel LastChildFill="True">
 
         <GroupBox Header="Image" FontSize="20" DockPanel.Dock="Left">
@@ -17,15 +23,52 @@
             <StackPanel>
                 <GroupBox Header="Type of set" FontSize="16">
                     <StackPanel>
-                        <RadioButton Content="Mandelbrot" IsChecked="{Binding IsMandelbrot}"></RadioButton>
-                        <RadioButton Content="Julia" IsChecked="{Binding IsJulia}"></RadioButton>
+                        <RadioButton Content="Mandelbrot" IsChecked="{Binding IsMandelbrot, Converter={StaticResource boolConverter}}" Margin="2"></RadioButton>
+                        <RadioButton Content="Julia" IsChecked="{Binding IsJulia, Converter={StaticResource boolConverter}}" Margin="2"></RadioButton>
+                        <RadioButton Content="Custom" IsChecked="{Binding IsCustom, Converter={StaticResource boolConverter}}" Margin="2"></RadioButton>
                     </StackPanel>
                 </GroupBox>
 
                 <GroupBox MinWidth="250" Header="Resolution" FontSize="16">
-                    <Slider Minimum="100" Maximum="1500" Value="{Binding Steps}"></Slider>
+                    <Slider Minimum="100" Maximum="1000" Value="{Binding Steps}"></Slider>
                 </GroupBox>
-                    
+
+                <GroupBox Header="Custom set" FontSize="16" Visibility="{Binding IsCustom, Converter={StaticResource visibilityConverter}}">
+                    <StackPanel>
+                        <Grid Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Left" ></Label>
+                            <TextBox Grid.Column="1" Text="{Binding xMin, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
+                        </Grid>
+                        <Grid Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Right" ></Label>
+                            <TextBox Grid.Column="1" Text="{Binding xMax, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
+                        </Grid>
+                        <Grid Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Top" ></Label>
+                            <TextBox Grid.Column="1" Text="{Binding yMin, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
+                        </Grid>
+                        <Grid Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Bottom" ></Label>
+                            <TextBox Grid.Column="1" Text="{Binding yMax, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
         </GroupBox>
     </DockPanel>

@@ -12,17 +12,33 @@ namespace ViewModel
     {
         private FractalP fractal;
 
-        private bool isMandelbrot, isJulia;
+        private bool isMandelbrot, isJulia, isCustom;
 
         private BitmapSource image;
 
         private bool isRendering, waitRender;
 
-        public Nullable<bool> IsMandelbrot
+        public bool IsCustom
+        {
+            get { return isCustom; }
+            set
+            {
+                if (value)
+                {
+                    isCustom = true;
+                    RenderImage();
+                }
+                else
+                    isCustom = false;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool IsMandelbrot
         {
             get { return isMandelbrot; }
             set {
-                if (value == true) {
+                if (value) {
                     isMandelbrot = true;
                     fractal.G = (z1, z2) => z1 * z1 + z2;
                     RenderImage();
@@ -47,19 +63,45 @@ namespace ViewModel
             }
         }
 
-        public Complex zMin {
-            get { return fractal.zMin; }
+
+
+        public double xMin {
+            get { return fractal.zMin.Real; }
             set {
-                fractal.zMin = value;
+                fractal.zMin = new Complex(value, fractal.zMin.Imaginary);
+                RenderImage();
                 NotifyPropertyChanged();
             }
         }
 
-        public Complex zMax
+        public double xMax
         {
-            get { return fractal.zMax; }
+            get { return fractal.zMax.Real; }
             set {
-                fractal.zMax = value;
+                fractal.zMax = new Complex(value, fractal.zMax.Imaginary);
+                RenderImage();
+                NotifyPropertyChanged();
+            }
+        }
+
+        public double yMin
+        {
+            get { return fractal.zMin.Imaginary; }
+            set
+            {
+                fractal.zMin = new Complex(fractal.zMin.Real, value);
+                RenderImage();
+                NotifyPropertyChanged();
+            }
+        }
+
+        public double yMax
+        {
+            get { return fractal.zMax.Imaginary; }
+            set
+            {
+                fractal.zMax = new Complex(fractal.zMax.Real, value);
+                RenderImage();
                 NotifyPropertyChanged();
             }
         }
