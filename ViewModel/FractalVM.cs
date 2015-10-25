@@ -157,20 +157,21 @@ namespace ViewModel
                 int Y = StepsY;
                 source = getArray();
 
-                int stride = X * 3 + X % 4;
+                int stride = X * 3;
                 byte[] pixels = new byte[Y * stride];
+                int p = 0;
 
-                for (int i = 0; i < X; i++)
+                for (int j = 0; j < Y; j++)
                 {
-                    for (int j = 0; j < Y; j++)
+                    for (int i = 0; i < X; i++)
                     {
                         var current = source[i, j];
-                        pixels[i * 3 + j * stride + 0] = (current == MaxIteration ? C1 : C2(current)).R;
-                        pixels[i * 3 + j * stride + 1] = (current == MaxIteration ? C1 : C2(current)).G;
-                        pixels[i * 3 + j * stride + 2] = (current == MaxIteration ? C1 : C2(current)).B;
+                        pixels[p++] = (current == MaxIteration ? C1 : C2(current)).R;
+                        pixels[p++] = (current == MaxIteration ? C1 : C2(current)).G;
+                        pixels[p++] = (current == MaxIteration ? C1 : C2(current)).B;
                     }
                 }
-                result =  BitmapSource.Create(X, Y, 96, 96, PixelFormats.Rgb24, BitmapPalettes.WebPalette, pixels, stride);
+                result =  BitmapSource.Create(X, Y, 96, 96, PixelFormats.Rgb24, null, pixels, stride);
                 result.Freeze();
                 return result;
             });
@@ -179,12 +180,7 @@ namespace ViewModel
         private async void RenderImageAsync()
         {
             isRendering = true;
-            image = await Render();
-            image.Freeze();
-            lock(this)
-            {
-                NotifyPropertyChanged("Image");
-            }
+            Image = await Render();
             isRendering = false;
             if (waitRender)
             {

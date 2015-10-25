@@ -7,26 +7,26 @@
         mc:Ignorable="d"
         Title="Fractal" Height="500" Width="700"
         FontSize="16">
-    <StackPanel Orientation="Horizontal">
+    <DockPanel LastChildFill="True">
 
         <GroupBox Header="Image" FontSize="20" DockPanel.Dock="Left">
-            <Image Source="{Binding Image}" Stretch="Fill" Margin="5"></Image>
+            <Image Source="{Binding Image}" Margin="5"></Image>
         </GroupBox>
 
-        <GroupBox MinWidth="100" Header="Options" FontSize="20" DockPanel.Dock="Right">
+        <GroupBox MinWidth="100" Header="Options" FontSize="20">
             <StackPanel>
-                <GroupBox Header="Fractal type" FontSize="16">
+                <GroupBox Header="Type of set" FontSize="16">
                     <StackPanel>
                         <RadioButton Content="Mandelbrot" IsChecked="{Binding IsMandelbrot}"></RadioButton>
                         <RadioButton Content="Julia" IsChecked="{Binding IsJulia}"></RadioButton>
                     </StackPanel>
                 </GroupBox>
 
-                <GroupBox Header="Fractal resolution" FontSize="16">
-                    <Slider Minimum="100" Maximum="1000" Value="{Binding Steps}"></Slider>
+                <GroupBox MinWidth="250" Header="Resolution" FontSize="16">
+                    <Slider Minimum="100" Maximum="1500" Value="{Binding Steps}"></Slider>
                 </GroupBox>
                     
             </StackPanel>
         </GroupBox>
-    </StackPanel>
+    </DockPanel>
 </Window>
