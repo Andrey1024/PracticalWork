@@ -9,7 +9,6 @@
         Title="Fractal" Height="500" Width="700"
         FontSize="16">
     <Window.Resources>
-        <vm:BoolConverter x:Key="boolConverter"></vm:BoolConverter>
         <vm:VisibilityConverter x:Key="visibilityConverter"></vm:VisibilityConverter>
     </Window.Resources>
 
@@ -23,9 +22,9 @@
             <StackPanel>
                 <GroupBox Header="Type of set" FontSize="16">
                     <StackPanel>
-                        <RadioButton Content="Mandelbrot" IsChecked="{Binding IsMandelbrot, Converter={StaticResource boolConverter}}" Margin="2"></RadioButton>
-                        <RadioButton Content="Julia" IsChecked="{Binding IsJulia, Converter={StaticResource boolConverter}}" Margin="2"></RadioButton>
-                        <RadioButton Content="Custom" IsChecked="{Binding IsCustom, Converter={StaticResource boolConverter}}" Margin="2"></RadioButton>
+                        <RadioButton Content="Mandelbrot" IsChecked="{Binding IsMandelbrot}" Margin="2"></RadioButton>
+                        <RadioButton Content="Julia" IsChecked="{Binding IsJulia}" Margin="2"></RadioButton>
+                        <RadioButton Content="Custom" IsChecked="{Binding IsCustom}" Margin="2"></RadioButton>
                     </StackPanel>
                 </GroupBox>
 
@@ -56,7 +55,7 @@
                                 <ColumnDefinition></ColumnDefinition>
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Label Content="Top" ></Label>
+                            <Label Content="Bottom" ></Label>
                             <TextBox Grid.Column="1" Text="{Binding yMin, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
                         </Grid>
                         <Grid Margin="2">
@@ -64,7 +63,7 @@
                                 <ColumnDefinition></ColumnDefinition>
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Label Content="Bottom" ></Label>
+                            <Label Content="Top" ></Label>
                             <TextBox Grid.Column="1" Text="{Binding yMax, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
                         </Grid>
                     </StackPanel>

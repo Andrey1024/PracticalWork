@@ -40,26 +40,28 @@ namespace ViewModel
             set {
                 if (value) {
                     isMandelbrot = true;
-                    fractal.G = (z1, z2) => z1 * z1 + z2;
+                    setMandelbrot();
                     RenderImage();
                 }
                 else
                     isMandelbrot = false;
+                NotifyPropertyChanged();
             }
         }
 
-        public Nullable<bool> IsJulia
+        public bool IsJulia
         {
             get { return isJulia; }
             set
             {
                 if (value == true) {
                     isJulia = true;
-                    fractal.G = (z1, z2) => z1 * z1 + new Complex(0.3, 0.6);
+                    setJulia();
                     RenderImage();
                 }
                 else
                     isJulia = false;
+                NotifyPropertyChanged();
             }
         }
 
@@ -178,6 +180,22 @@ namespace ViewModel
             }
         }
 
+        private void setMandelbrot()
+        {
+            fractal.zMin = new Complex(-2, -2);
+            fractal.zMax = new Complex( 2,  2);
+            fractal.G = (z1, z2) => z1 * z1 + z2;
+
+        }
+
+        private void setJulia()
+        {
+            fractal.zMin = new Complex(-2, -2);
+            fractal.zMax = new Complex( 2,  2);
+            fractal.G = (z1, z2) => z1 * z1 + new Complex(0.3, 0.6);
+
+        }
+
         private byte[,] getArray()
         {
             byte[,] source;
@@ -247,7 +265,7 @@ namespace ViewModel
         {
             fractal = new FractalP();
             IsMandelbrot = true;
-            isJulia = false;
+            IsJulia = IsCustom = false;
             isRendering = waitRender = false;
         }
     }
