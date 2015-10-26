@@ -195,27 +195,16 @@ namespace ViewModel
             fractal.G = (z1, z2) => z1 * z1 + new Complex(0.3, 0.6);
 
         }
-
-        private byte[,] getArray()
-        {
-            byte[,] source;
-            lock (fractal)
-            {
-                source = fractal.Process();
-            }
-            return source;
-        }
         
         private Task<BitmapSource> Render ()
         {
             return Task.Run<BitmapSource>(() =>
             {
                 BitmapSource result;
-                byte[,] source = null;
 
                 int X = StepsX;
                 int Y = StepsY;
-                source = getArray();
+                byte[,] source = fractal.Process();
 
                 int stride = X * 3;
                 byte[] pixels = new byte[Y * stride];
