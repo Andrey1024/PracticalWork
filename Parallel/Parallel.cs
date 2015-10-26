@@ -17,29 +17,43 @@ namespace Fractal
         public Func<Complex, Complex> F { get; set; }
         public Func<Complex, Complex, Complex> G { get; set; }
 
-        public Complex zMin { get; set; }
-        public Complex zMax { get; set; }
 
-        public int StepsX { get; set; }
-        public int StepsY { get; set; }
+
+        private Complex zMin {
+            get { return new Complex(xMin, yMin); }
+            set { xMin = value.Real; yMin = value.Imaginary; }
+        }
+        private Complex zMax {
+            get { return new Complex(xMax, yMax); }
+            set { xMax = value.Real; yMax = value.Imaginary; }
+        }
+        
 
         public Color C1 { get; set; }
         public Func<int, Color> C2 { get; set; }
 
         private double StepX
         {
-            get { return (zMax.Real - zMin.Real) / StepsX; }
+            get { return (zMax.Real - zMin.Real) / Steps; }
         }
         private double StepY
         {
-            get { return (zMax.Imaginary - zMin.Imaginary) / StepsY; }
+            get { return (zMax.Imaginary - zMin.Imaginary) / Steps; }
         }
+
+        public int Steps { get; set; }
+
+
+        public double xMin { get; set; }
+        public double xMax { get; set; }
+        public double yMin { get; set; }
+        public double yMax { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FractalP"/> class.
         /// </summary>
         public FractalP()
-            : this(2, 150, z => z, (z1, z2) => z1*z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Green, k => Color.FromArgb(k, (k * 3)%255 , (k * 2)&255))
+            : this(2, 150, z => z, (z1, z2) => z1*z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Green, k => Color.FromArgb(k, (k * 2)%255 , (k * 3)%255))
         { }
 
         /// <summary>
@@ -64,17 +78,16 @@ namespace Fractal
             this.zMax = zMax;
             this.C1 = C1;
             this.C2 = C2;
-            this.StepsX = StepsY = 500;
+            this.Steps = 500;
         }
     
         public byte[,] Process()
         {
-            int X, Y = StepsX;
-            double dX, dY = StepX;
+            int X, Y;
+            double dX, dY;
             lock(this)
             {
-                X = StepsX;
-                Y = StepsY;
+                X = Y = Steps;
                 dX = StepX;
                 dY = StepY;
             }

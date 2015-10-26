@@ -8,7 +8,7 @@ using System.Windows.Media.Imaging;
 
 namespace ViewModel
 {
-    public class FractalVM: ViewModelBase
+    public class FractalVM: ViewModelBase, IFractal
     {
         private FractalP fractal;
 
@@ -17,6 +17,7 @@ namespace ViewModel
         private BitmapSource image;
 
         private bool isRendering, waitRender;
+        private double juliaReal, juliaImaginary;
 
         public bool IsCustom
         {
@@ -65,13 +66,11 @@ namespace ViewModel
             }
         }
 
-
-
         public double xMin {
-            get { return fractal.zMin.Real; }
+            get { return fractal.xMin; }
             set {
                 lock(fractal)
-                    fractal.zMin = new Complex(value, fractal.zMin.Imaginary);
+                    fractal.xMin = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -79,10 +78,10 @@ namespace ViewModel
 
         public double xMax
         {
-            get { return fractal.zMax.Real; }
+            get { return fractal.xMax; }
             set {
                 lock(fractal)
-                    fractal.zMax = new Complex(value, fractal.zMax.Imaginary);
+                    fractal.xMax = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -90,11 +89,11 @@ namespace ViewModel
 
         public double yMin
         {
-            get { return fractal.zMin.Imaginary; }
+            get { return fractal.yMin; }
             set
             {
                 lock(fractal)
-                    fractal.zMin = new Complex(fractal.zMin.Real, value);
+                    fractal.yMin = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -102,11 +101,11 @@ namespace ViewModel
 
         public double yMax
         {
-            get { return fractal.zMax.Imaginary; }
+            get { return fractal.yMax; }
             set
             {
                 lock(fractal)
-                    fractal.zMax = new Complex(fractal.zMax.Real, value);
+                    fractal.yMax = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -114,33 +113,16 @@ namespace ViewModel
 
         public int Steps
         {
-            get { return fractal.StepsX; }
+            get { return fractal.Steps; }
             set
             {
                 lock(fractal)
-                    fractal.StepsX = fractal.StepsY = value;
+                    fractal.Steps = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
         }
-
-        public int StepsX {
-            get { return fractal.StepsX; }
-            set {
-                fractal.StepsX = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public int StepsY
-        {
-            get { return fractal.StepsY; }
-            set {
-                fractal.StepsY = value;
-                NotifyPropertyChanged();
-            }
-        }
-
+        
         public byte MaxIteration
         {
             get { return fractal.MaxIteration; }
@@ -185,12 +167,38 @@ namespace ViewModel
             }
         }
 
+        public double JuliaReal
+        {
+            get { return juliaReal; }
+            set
+            {
+                juliaReal = value;
+                lock(fractal)
+                    fractal.G = (z1, z2) => z1 * z1 + new Complex(juliaReal, juliaImaginary);
+                RenderImage();
+                NotifyPropertyChanged();
+            }
+        }
+
+        public double JuliaImaginary
+        {
+            get { return juliaImaginary; }
+            set
+            {
+                juliaImaginary = value;
+                lock (fractal)
+                    fractal.G = (z1, z2) => z1 * z1 + new Complex(juliaReal, juliaImaginary);
+                RenderImage();
+                NotifyPropertyChanged();
+            }
+        }
+
         private void setMandelbrot()
         {
             lock(fractal)
             {
-                fractal.zMin = new Complex(-2, -2);
-                fractal.zMax = new Complex(2, 2);
+                xMin = yMin = -2;
+                xMax = yMax =  2;
                 fractal.G = (z1, z2) => z1 * z1 + z2;
             }
 
@@ -200,9 +208,9 @@ namespace ViewModel
         {
             lock (fractal)
             {
-                fractal.zMin = new Complex(-2, -2);
-                fractal.zMax = new Complex(2, 2);
-                fractal.G = (z1, z2) => z1 * z1 + new Complex(0.3, 0.6);
+                xMin = yMin = -2;
+                xMax = yMax = 2;
+                fractal.G = (z1, z2) => z1 * z1 + new Complex(juliaReal, juliaImaginary);
             }
 
         }
@@ -214,10 +222,7 @@ namespace ViewModel
                 BitmapSource result;
                 int X, Y;
                 lock (fractal)
-                {
-                    X = fractal.StepsX;
-                    Y = fractal.StepsY;
-                }
+                    X = Y = fractal.Steps;
                 byte[,] source = fractal.Process();
 
                 int stride = X * 3;
@@ -267,9 +272,11 @@ namespace ViewModel
         public FractalVM()
         {
             fractal = new FractalP();
-            IsMandelbrot = true;
             IsJulia = IsCustom = false;
             isRendering = waitRender = false;
+            JuliaReal = 0.3;
+            JuliaImaginary = 0.6;
+            IsMandelbrot = true;
         }
     }
 }

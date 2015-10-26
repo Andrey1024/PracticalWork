@@ -24,7 +24,15 @@
                     <StackPanel>
                         <RadioButton Content="Mandelbrot" IsChecked="{Binding IsMandelbrot}" Margin="2"></RadioButton>
                         <RadioButton Content="Julia" IsChecked="{Binding IsJulia}" Margin="2"></RadioButton>
-                        <RadioButton Content="Custom" IsChecked="{Binding IsCustom}" Margin="2"></RadioButton>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Julia set options" FontSize="16" Visibility="{Binding IsJulia, Converter={StaticResource visibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Constant = "/>
+                        <TextBox Text="{Binding JuliaReal, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                        <Label Content=" + "/>
+                        <TextBox Text="{Binding JuliaImaginary, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                        <Label Content="i"/>
                     </StackPanel>
                 </GroupBox>
 
@@ -32,7 +40,7 @@
                     <Slider Minimum="100" Maximum="1000" Value="{Binding Steps}"></Slider>
                 </GroupBox>
 
-                <GroupBox Header="Custom set" FontSize="16" Visibility="{Binding IsCustom, Converter={StaticResource visibilityConverter}}">
+                <GroupBox Header="Bounds" FontSize="16">
                     <StackPanel>
                         <Grid Margin="2">
                             <Grid.ColumnDefinitions>
