@@ -70,7 +70,8 @@ namespace ViewModel
         public double xMin {
             get { return fractal.zMin.Real; }
             set {
-                fractal.zMin = new Complex(value, fractal.zMin.Imaginary);
+                lock(fractal)
+                    fractal.zMin = new Complex(value, fractal.zMin.Imaginary);
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -80,7 +81,8 @@ namespace ViewModel
         {
             get { return fractal.zMax.Real; }
             set {
-                fractal.zMax = new Complex(value, fractal.zMax.Imaginary);
+                lock(fractal)
+                    fractal.zMax = new Complex(value, fractal.zMax.Imaginary);
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -91,7 +93,8 @@ namespace ViewModel
             get { return fractal.zMin.Imaginary; }
             set
             {
-                fractal.zMin = new Complex(fractal.zMin.Real, value);
+                lock(fractal)
+                    fractal.zMin = new Complex(fractal.zMin.Real, value);
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -102,7 +105,8 @@ namespace ViewModel
             get { return fractal.zMax.Imaginary; }
             set
             {
-                fractal.zMax = new Complex(fractal.zMax.Real, value);
+                lock(fractal)
+                    fractal.zMax = new Complex(fractal.zMax.Real, value);
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -113,6 +117,7 @@ namespace ViewModel
             get { return fractal.StepsX; }
             set
             {
+                lock(fractal)
                     fractal.StepsX = fractal.StepsY = value;
                 RenderImage();
                 NotifyPropertyChanged();
@@ -182,17 +187,23 @@ namespace ViewModel
 
         private void setMandelbrot()
         {
-            fractal.zMin = new Complex(-2, -2);
-            fractal.zMax = new Complex( 2,  2);
-            fractal.G = (z1, z2) => z1 * z1 + z2;
+            lock(fractal)
+            {
+                fractal.zMin = new Complex(-2, -2);
+                fractal.zMax = new Complex(2, 2);
+                fractal.G = (z1, z2) => z1 * z1 + z2;
+            }
 
         }
 
         private void setJulia()
         {
-            fractal.zMin = new Complex(-2, -2);
-            fractal.zMax = new Complex( 2,  2);
-            fractal.G = (z1, z2) => z1 * z1 + new Complex(0.3, 0.6);
+            lock (fractal)
+            {
+                fractal.zMin = new Complex(-2, -2);
+                fractal.zMax = new Complex(2, 2);
+                fractal.G = (z1, z2) => z1 * z1 + new Complex(0.3, 0.6);
+            }
 
         }
         
@@ -201,9 +212,12 @@ namespace ViewModel
             return Task.Run<BitmapSource>(() =>
             {
                 BitmapSource result;
-
-                int X = StepsX;
-                int Y = StepsY;
+                int X, Y;
+                lock (fractal)
+                {
+                    X = fractal.StepsX;
+                    Y = fractal.StepsY;
+                }
                 byte[,] source = fractal.Process();
 
                 int stride = X * 3;

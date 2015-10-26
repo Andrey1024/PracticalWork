@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FractalGUI"
         xmlns:vm="clr-namespace:ViewModel;assembly=ViewModel"
         mc:Ignorable="d"
-        Title="Fractal" Height="500" Width="700"
+        Title="Fractal" Height="500" Width="800"
         FontSize="16">
     <Window.Resources>
         <vm:VisibilityConverter x:Key="visibilityConverter"></vm:VisibilityConverter>

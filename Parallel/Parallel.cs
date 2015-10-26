@@ -69,10 +69,15 @@ namespace Fractal
     
         public byte[,] Process()
         {
-            int X = StepsX;
-            int Y = StepsY;
-            double dX = StepX;
-            double dY = StepY;
+            int X, Y = StepsX;
+            double dX, dY = StepX;
+            lock(this)
+            {
+                X = StepsX;
+                Y = StepsY;
+                dX = StepX;
+                dY = StepY;
+            }
             byte[,] result = new byte[X, Y];
 
             Parallel.For(0, X, i => {
