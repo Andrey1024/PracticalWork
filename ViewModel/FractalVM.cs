@@ -1,8 +1,9 @@
 ﻿using System;
 using Fractal;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Numerics;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -18,6 +19,33 @@ namespace ViewModel
 
         private bool isRendering, waitRender;
         private double juliaReal, juliaImaginary;
+
+        private RelayCommand zoomIn;
+        private RelayCommand zoomOut;
+
+        public ICommand ZoomIn
+        {
+            get
+            {
+                if (zoomIn == null)
+                {
+                    zoomIn = new RelayCommand(x => ZoomInProcedure(x));
+                }
+                return zoomIn;
+            }
+        }
+
+        public ICommand ZoomOut
+        {
+            get
+            {
+                if (zoomOut == null)
+                {
+                    zoomOut = new RelayCommand(x => ZoomOutProcedure(x));
+                }
+                return zoomOut;
+            }
+        }
 
         public bool IsCustom
         {
@@ -126,7 +154,12 @@ namespace ViewModel
         public byte MaxIteration
         {
             get { return fractal.MaxIteration; }
-            set { fractal.MaxIteration = value; }
+            set {
+                lock(fractal)
+                    fractal.MaxIteration = value;
+                RenderImage();
+                NotifyPropertyChanged();
+            }
         }
 
         public int MaxConstant
@@ -166,7 +199,7 @@ namespace ViewModel
                 NotifyPropertyChanged();
             }
         }
-
+        
         public double JuliaReal
         {
             get { return juliaReal; }
@@ -243,6 +276,56 @@ namespace ViewModel
                 result.Freeze();
                 return result;
             });
+        }
+
+        private void ZoomInProcedure(object e)
+        {
+            double multiply = 0.7;
+            System.Windows.Controls.Image img = e as System.Windows.Controls.Image;
+            Point mousePos = Mouse.GetPosition((IInputElement)e);
+
+            double CurrentDx = xMax - xMin;
+            double newDxHalf = CurrentDx * multiply / 2;
+            double PosX = xMin + (mousePos.X / img.ActualWidth) * CurrentDx;
+            double PosY = yMin + (mousePos.Y / img.ActualHeight) * CurrentDx;
+            lock (fractal)
+            {
+                fractal.xMin = PosX - newDxHalf;
+                fractal.xMax = PosX + newDxHalf;
+                fractal.yMin = PosY - newDxHalf;
+                fractal.yMax = PosY + newDxHalf;
+            }
+            NotifyPropertyChanged("xMin");
+            NotifyPropertyChanged("xMax");
+            NotifyPropertyChanged("yMin");
+            NotifyPropertyChanged("yMax");
+            
+            RenderImage();
+        }
+
+        private void ZoomOutProcedure(object e)
+        {
+            double multiply = 1.3;
+            System.Windows.Controls.Image img = e as System.Windows.Controls.Image;
+            Point mousePos = Mouse.GetPosition((IInputElement)e);
+
+            double CurrentDx = xMax - xMin;
+            double newDxHalf = CurrentDx * multiply / 2;
+            double PosX = xMin + (mousePos.X / img.ActualWidth) * CurrentDx;
+            double PosY = yMin + (mousePos.Y / img.ActualHeight) * CurrentDx;
+            lock (fractal)
+            {
+                fractal.xMin = PosX - newDxHalf;
+                fractal.xMax = PosX + newDxHalf;
+                fractal.yMin = PosY - newDxHalf;
+                fractal.yMax = PosY + newDxHalf;
+            }
+            NotifyPropertyChanged("xMin");
+            NotifyPropertyChanged("xMax");
+            NotifyPropertyChanged("yMin");
+            NotifyPropertyChanged("yMax");
+            
+            RenderImage();
         }
 
         private async void RenderImageAsync()

@@ -13,5 +13,10 @@ namespace FractalGUI
             InitializeComponent();
             this.DataContext = new FractalVM();
         }
+
+        private void Image_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+
+        }
     }
 }

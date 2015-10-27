@@ -13,9 +13,13 @@
     </Window.Resources>
 
     <DockPanel LastChildFill="True">
-
         <GroupBox Header="Image" FontSize="20" DockPanel.Dock="Left">
-            <Image Source="{Binding Image}" Margin="5"></Image>
+            <Image Source="{Binding Image}"  Margin="5" x:Name="image">
+                <Image.InputBindings>
+                    <MouseBinding Command="{Binding ZoomOut}" MouseAction="RightClick" CommandParameter="{Binding ElementName=image}"/>
+                    <MouseBinding Command="{Binding ZoomIn}" MouseAction="LeftClick" CommandParameter="{Binding ElementName=image}"/>
+                </Image.InputBindings>
+            </Image>
         </GroupBox>
 
         <GroupBox MinWidth="100" Header="Options" FontSize="20">
@@ -36,8 +40,24 @@
                     </StackPanel>
                 </GroupBox>
 
-                <GroupBox MinWidth="250" Header="Resolution" FontSize="16">
-                    <Slider Minimum="100" Maximum="1000" Value="{Binding Steps}"></Slider>
+                <GroupBox MinWidth="250" Header="Parameters" FontSize="16">
+                    <StackPanel>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Resolution"/>
+                                <TextBlock Text="{Binding Steps}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Slider Minimum="100" Maximum="1000" Value="{Binding Steps}"></Slider>
+                        </StackPanel>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Maximum iteration"/>
+                                <TextBlock Text="{Binding MaxIteration}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Slider Minimum="10" Maximum="255" Value="{Binding MaxIteration}"></Slider>
+                        </StackPanel>
+                    </StackPanel>
+
                 </GroupBox>
 
                 <GroupBox Header="Bounds" FontSize="16">
@@ -48,7 +68,7 @@
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Label Content="Left" ></Label>
-                            <TextBox Grid.Column="1" Text="{Binding xMin, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
+                            <TextBlock Grid.Column="1" Text="{Binding xMin, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBlock>
                         </Grid>
                         <Grid Margin="2">
                             <Grid.ColumnDefinitions>
@@ -56,7 +76,7 @@
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Label Content="Right" ></Label>
-                            <TextBox Grid.Column="1" Text="{Binding xMax, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
+                            <TextBlock Grid.Column="1" Text="{Binding xMax, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBlock>
                         </Grid>
                         <Grid Margin="2">
                             <Grid.ColumnDefinitions>
@@ -64,7 +84,7 @@
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Label Content="Bottom" ></Label>
-                            <TextBox Grid.Column="1" Text="{Binding yMin, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
+                            <TextBlock Grid.Column="1" Text="{Binding yMin, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBlock>
                         </Grid>
                         <Grid Margin="2">
                             <Grid.ColumnDefinitions>
@@ -72,7 +92,7 @@
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Label Content="Top" ></Label>
-                            <TextBox Grid.Column="1" Text="{Binding yMax, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBox>
+                            <TextBlock Grid.Column="1" Text="{Binding yMax, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"></TextBlock>
                         </Grid>
                     </StackPanel>
                 </GroupBox>

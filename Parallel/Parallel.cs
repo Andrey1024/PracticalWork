@@ -53,7 +53,7 @@ namespace Fractal
         /// Initializes a new instance of the <see cref="FractalP"/> class.
         /// </summary>
         public FractalP()
-            : this(2, 150, z => z, (z1, z2) => z1*z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.Green, k => Color.FromArgb(k, (k * 2)%255 , (k * 3)%255))
+            : this(2, 200, z => z, (z1, z2) => z1*z1 + z2, new Complex(-2, -2), new Complex(2, 2), Color.DarkCyan, k => Color.FromArgb(k, (int)(k * 1.7)%255 , (int)(k * 1.2)%255))
         { }
 
         /// <summary>
