@@ -9,19 +9,25 @@ using System.Windows.Media.Imaging;
 
 namespace ViewModel
 {
-    public class FractalVM: ViewModelBase, IFractal
+    public class FractalVM: ViewModelBase
     {
-        private FractalP fractal;
+        private IFractal fractal;
+        private Object thisLock = new Object();
 
-        private bool isMandelbrot, isJulia, isCustom;
+        private bool isMandelbrot = true, isJulia;
 
         private BitmapSource image;
 
-        private bool isRendering, waitRender;
-        private double juliaReal, juliaImaginary;
+        private bool isRendering = false, waitRender = false;
+        private double juliaReal = 0.3, juliaImaginary = 0.6;
 
         private RelayCommand zoomIn;
         private RelayCommand zoomOut;
+
+        private double xmin = -2, xmax = 2, ymin = -2, ymax = 2, maxConstant = 2;
+        private byte maxIteration = 150;
+        private int steps = 500;
+
 
         public ICommand ZoomIn
         {
@@ -46,23 +52,7 @@ namespace ViewModel
                 return zoomOut;
             }
         }
-
-        public bool IsCustom
-        {
-            get { return isCustom; }
-            set
-            {
-                if (value)
-                {
-                    isCustom = true;
-                    RenderImage();
-                }
-                else
-                    isCustom = false;
-                NotifyPropertyChanged();
-            }
-        }
-
+        
         public bool IsMandelbrot
         {
             get { return isMandelbrot; }
@@ -95,10 +85,10 @@ namespace ViewModel
         }
 
         public double xMin {
-            get { return fractal.xMin; }
+            get { return xmin; }
             set {
-                lock(fractal)
-                    fractal.xMin = value;
+                lock(thisLock)
+                    xmin = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -106,10 +96,10 @@ namespace ViewModel
 
         public double xMax
         {
-            get { return fractal.xMax; }
+            get { return xmax; }
             set {
-                lock(fractal)
-                    fractal.xMax = value;
+                lock(thisLock)
+                    xmax = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -117,11 +107,11 @@ namespace ViewModel
 
         public double yMin
         {
-            get { return fractal.yMin; }
+            get { return ymin; }
             set
             {
-                lock(fractal)
-                    fractal.yMin = value;
+                lock(thisLock)
+                    ymin = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -129,11 +119,11 @@ namespace ViewModel
 
         public double yMax
         {
-            get { return fractal.yMax; }
+            get { return ymax; }
             set
             {
-                lock(fractal)
-                    fractal.yMax = value;
+                lock(thisLock)
+                    ymax = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -141,11 +131,11 @@ namespace ViewModel
 
         public int Steps
         {
-            get { return fractal.Steps; }
+            get { return steps; }
             set
             {
-                lock(fractal)
-                    fractal.Steps = value;
+                lock(thisLock)
+                    steps = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -153,42 +143,38 @@ namespace ViewModel
         
         public byte MaxIteration
         {
-            get { return fractal.MaxIteration; }
+            get { return maxIteration; }
             set {
-                lock(fractal)
-                    fractal.MaxIteration = value;
+                lock(thisLock)
+                    maxIteration = value;
                 RenderImage();
                 NotifyPropertyChanged();
             }
         }
 
-        public int MaxConstant
+        public double MaxConstant
         {
-            get { return fractal.MaxConstant; }
-            set { fractal.MaxConstant = value; }
+            get { return maxConstant; }
+            set { maxConstant = value; }
         }
 
-        public System.Drawing.Color C1
+        private System.Drawing.Color C1
         {
-            get { return fractal.C1; }
-            set { fractal.C1 = value; }
+            get; set;
         }
 
-        public Func<int, System.Drawing.Color> C2
+        private Func<int, System.Drawing.Color> C2
         {
-            get { return fractal.C2; }
-            set { fractal.C2 = value; }
+            get; set;
         }
 
-        public Func<Complex, Complex> F 
+        private Func<Complex, Complex> F 
         {
-            get { return fractal.F; }
-            set { fractal.F = value; }
+            get; set;
         }
-        public Func<Complex, Complex, Complex> G 
+        private Func<Complex, Complex, Complex> G 
         {
-            get { return fractal.G; }
-            set { fractal.G = value; }
+            get; set;
         }
 
         public BitmapSource Image
@@ -206,8 +192,8 @@ namespace ViewModel
             set
             {
                 juliaReal = value;
-                lock(fractal)
-                    fractal.G = (z1, z2) => z1 * z1 + new Complex(juliaReal, juliaImaginary);
+                lock(thisLock)
+                    G = (z1, z2) => z1 * z1 + new Complex(juliaReal, juliaImaginary);
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -220,7 +206,7 @@ namespace ViewModel
             {
                 juliaImaginary = value;
                 lock (fractal)
-                    fractal.G = (z1, z2) => z1 * z1 + new Complex(juliaReal, juliaImaginary);
+                    G = (z1, z2) => z1 * z1 + new Complex(juliaReal, juliaImaginary);
                 RenderImage();
                 NotifyPropertyChanged();
             }
@@ -228,11 +214,12 @@ namespace ViewModel
 
         private void setMandelbrot()
         {
-            lock(fractal)
+            lock(thisLock)
             {
                 xMin = yMin = -2;
                 xMax = yMax =  2;
-                fractal.G = (z1, z2) => z1 * z1 + z2;
+                G = (z1, z2) => z1 * z1 + z2;
+                F = x => x;
             }
 
         }
@@ -243,7 +230,7 @@ namespace ViewModel
             {
                 xMin = yMin = -2;
                 xMax = yMax = 2;
-                fractal.G = (z1, z2) => z1 * z1 + new Complex(juliaReal, juliaImaginary);
+                G = (z1, z2) => z1 * z1 + new Complex(juliaReal, juliaImaginary);
             }
 
         }
@@ -254,9 +241,9 @@ namespace ViewModel
             {
                 BitmapSource result;
                 int X, Y;
-                lock (fractal)
-                    X = Y = fractal.Steps;
-                byte[,] source = fractal.Process();
+                lock (thisLock)
+                    X = Y = steps;
+                byte[,] source = fractal.Process(MaxConstant, MaxIteration, F, G, new Complex(xmin, ymin), new Complex(xmax, ymax), steps, C1, C2);
 
                 int stride = X * 3;
                 byte[] pixels = new byte[Y * stride];
@@ -278,9 +265,8 @@ namespace ViewModel
             });
         }
 
-        private void ZoomInProcedure(object e)
+        private void ZoomProcedure (object e, double multiply)
         {
-            double multiply = 0.7;
             System.Windows.Controls.Image img = e as System.Windows.Controls.Image;
             Point mousePos = Mouse.GetPosition((IInputElement)e);
 
@@ -288,44 +274,29 @@ namespace ViewModel
             double newDxHalf = CurrentDx * multiply / 2;
             double PosX = xMin + (mousePos.X / img.ActualWidth) * CurrentDx;
             double PosY = yMin + (mousePos.Y / img.ActualHeight) * CurrentDx;
-            lock (fractal)
+            lock (thisLock)
             {
-                fractal.xMin = PosX - newDxHalf;
-                fractal.xMax = PosX + newDxHalf;
-                fractal.yMin = PosY - newDxHalf;
-                fractal.yMax = PosY + newDxHalf;
+                xmin = PosX - newDxHalf;
+                xmax = PosX + newDxHalf;
+                ymin = PosY - newDxHalf;
+                ymax = PosY + newDxHalf;
             }
             NotifyPropertyChanged("xMin");
             NotifyPropertyChanged("xMax");
             NotifyPropertyChanged("yMin");
             NotifyPropertyChanged("yMax");
-            
+
             RenderImage();
+        }
+
+        private void ZoomInProcedure(object e)
+        {
+            ZoomProcedure(e, 0.7);
         }
 
         private void ZoomOutProcedure(object e)
         {
-            double multiply = 1.3;
-            System.Windows.Controls.Image img = e as System.Windows.Controls.Image;
-            Point mousePos = Mouse.GetPosition((IInputElement)e);
-
-            double CurrentDx = xMax - xMin;
-            double newDxHalf = CurrentDx * multiply / 2;
-            double PosX = xMin + (mousePos.X / img.ActualWidth) * CurrentDx;
-            double PosY = yMin + (mousePos.Y / img.ActualHeight) * CurrentDx;
-            lock (fractal)
-            {
-                fractal.xMin = PosX - newDxHalf;
-                fractal.xMax = PosX + newDxHalf;
-                fractal.yMin = PosY - newDxHalf;
-                fractal.yMax = PosY + newDxHalf;
-            }
-            NotifyPropertyChanged("xMin");
-            NotifyPropertyChanged("xMax");
-            NotifyPropertyChanged("yMin");
-            NotifyPropertyChanged("yMax");
-            
-            RenderImage();
+            ZoomProcedure(e, 1.3);
         }
 
         private async void RenderImageAsync()
@@ -355,10 +326,8 @@ namespace ViewModel
         public FractalVM()
         {
             fractal = new FractalP();
-            IsJulia = IsCustom = false;
-            isRendering = waitRender = false;
-            JuliaReal = 0.3;
-            JuliaImaginary = 0.6;
+            C1 = System.Drawing.Color.Green;
+            C2 = k => System.Drawing.Color.FromArgb(k, (int)(k * 0.5) % 255, (int)(k * 1.2) % 255 );
             IsMandelbrot = true;
         }
     }
